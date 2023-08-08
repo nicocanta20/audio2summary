@@ -31,10 +31,11 @@ def warning_api_key(openai_api_key):
 
 def main():
     st.title("Audio2Summary")
+    st.write("### Powered by OpenAI's [Whisper](https://platform.openai.com/docs/guides/speech-to-text) and [GPT-3.5 Turbo](https://platform.openai.com/docs/guides/gpt)")
+    st.write('##### By [Nicolas Cantarovici](https://github.com/nicocanta20) and [Florian Reyes](https://github.com/florianreyes)')
     with st.sidebar:
         openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
         "[Get an OpenAI API key](https://platform.openai.com/account/api-keys)"
-        "[View the source code](https://github.com/nicocanta20/audio2summary.git)"
     
 
     audio_file = st.file_uploader("Upload Audio", type=["ogg", "wav", "mp3"])
