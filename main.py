@@ -7,6 +7,17 @@ def ogg2mp3(file):
     sound.export("audio.mp3", format="mp3")
     return "audio.mp3"
 
+def wav2mp3(file):
+    sound = AudioSegment.from_wav(file)
+    sound.export("audio.mp3", format="mp3")
+    return "audio.mp3"
+
+def returnSameFormat(file):
+    sound = AudioSegment.from_mp3(file)
+    sound.export("audio.mp3", format="mp3")
+    return "audio.mp3"
+
+
 def audio2text(audio_file):
     # read the audio file
     audio_file= open(audio_file, "rb")
@@ -14,11 +25,12 @@ def audio2text(audio_file):
     res= transcript['text']
     return res
 
-def summary(text):
+def summary(text,language):
     response = openai.ChatCompletion.create(
-    model="gpt-3.5-turbo",
+    model="gpt-3.5-turbo-16k",
     messages=[
         {"role": "system", "content": "You are a helpful assistant and must make a summary of the following conversation. Must return a bullet point list of the main points of the conversation. Additionaly return the 3 most important ideas of the conversation."},
+        {"role": "user", "content": "respond everything in "+ language},
         {"role": "user", "content": text},
     ])
     return response.choices[0]["message"]["content"]
@@ -39,16 +51,21 @@ def main():
     
 
     audio_file = st.file_uploader("Upload Audio", type=["ogg", "wav", "mp3"])
+    language = st.selectbox("Language",   ["English", "Spanish"])
     if st.button("Start", key="whisper"):
         if audio_file:
             try:
                 if audio_file.type == "audio/ogg":
                     audio_file = ogg2mp3(audio_file)
-
+                elif audio_file.type == "audio/wav":
+                    audio_file = wav2mp3(audio_file)
+                else:
+                    audio_file = returnSameFormat(audio_file)
+                    
                 warning_api_key(openai_api_key)
                 openai.api_key = openai_api_key
                 text = audio2text(audio_file)
-                response = summary(text)
+                response = summary(text,language)
                 if response:
                     st.subheader("Summary of the audio file:")
                     st.write(response)
